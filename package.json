@@ -1,5 +1,5 @@
 {
-  "name": "tamil-astro",
+  "name": "tamil-astro-astrologer",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,6 +11,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0-0",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0-0",
+    "@babel/plugin-transform-arrow-functions": "^7.0.0-0",
+    "@babel/plugin-transform-shorthand-properties": "^7.0.0-0",
+    "@babel/plugin-transform-template-literals": "^7.0.0-0",
     "@gorhom/bottom-sheet": "^4.4.5",
     "@react-native-async-storage/async-storage": "^1.18.1",
     "@react-native-community/datetimepicker": "^7.0.1",
@@ -53,6 +58,7 @@
     "@react-native-community/eslint-config": "^3.2.0",
     "@testing-library/jest-native": "^5.4.2",
     "@tsconfig/react-native": "^2.0.2",
+    "@types/babel__core": "^7.20.0",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
     "@types/react-native-razorpay": "^2.2.1",
