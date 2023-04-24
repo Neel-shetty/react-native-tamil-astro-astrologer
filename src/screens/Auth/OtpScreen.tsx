@@ -46,6 +46,7 @@ const OtpScreen = () => {
             phone: route.params.phone,
           });
           // var result = true; // TODO: Remove this line
+          
           if (result === true) {
             navigation.navigate(LanguageScreen.name);
           }
