@@ -32,13 +32,13 @@ const AstrologerWaitModal = ({
     isLoading,
   } = useQuery(['assign-astrologer'], AssignAstrologer);
 
-  const combinedUserId = React.useMemo(() => {
-    const user = Auth().currentUser;
-    if (!user || !astrologer) return null;
-    return Number(user?.uid) > Number(astrologer.id)
-      ? `${astrologer.id}-${user?.uid}`
-      : `${user?.uid}-${astrologer.id}`;
-  }, [astrologer]);
+  // const combinedUserId = React.useMemo(() => {
+  //   const user = Auth().currentUser;
+  //   if (!user || !astrologer) return null;
+  //   return Number(user?.uid) > Number(astrologer.id)
+  //     ? `${astrologer.id}-${user?.uid}`
+  //     : `${user?.uid}-${astrologer.id}`;
+  // }, [astrologer]);
 
   // console.log(
   //   '🚀 ~ file: AstrologerWaitModal.tsx:38 ~ astrologer:',

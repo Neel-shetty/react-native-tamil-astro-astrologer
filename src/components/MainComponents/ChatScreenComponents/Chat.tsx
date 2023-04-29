@@ -23,15 +23,20 @@ const Chat = () => {
   const [showRechargeModal, setShowRechargeModal] = React.useState(false);
   const [showBalance0Modal, setShowBalance0Modal] = React.useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = React.useState(false);
+  const flatListRef = React.useRef<FlatList>(null);
 
   const route = useRoute<ChatScreenNavigationProp['route']>();
+  console.log(
+    '🚀 ~ file: Chat.tsx:28 ~ Chat ~ route:',
+    route.params?.combinedUserId,
+  );
 
   const chatId = React.useMemo(() => route.params?.chatId, [route]);
 
   async function getMessages() {
     firestore()
       .collection('chats')
-      .doc('12-16')
+      .doc(route.params?.combinedUserId)
       .onSnapshot(doc => {
         // console.log('Current data: ', doc.data());
         setMessages(doc.data()?.messages);
@@ -68,6 +73,7 @@ const Chat = () => {
         {/* make it scroll to bottom automatically*/}
         <FlatList
           data={messages}
+          ref={flatListRef}
           renderItem={({item}) => {
             return (
               <Message
@@ -75,6 +81,11 @@ const Chat = () => {
                 message={item.message}
               />
             );
+          }}
+          onContentSizeChange={() => {
+            if (messages.length > 0) {
+              flatListRef.current?.scrollToEnd({animated: true});
+            }
           }}
         />
         <Formik
