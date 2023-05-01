@@ -48,7 +48,7 @@ const Chat = () => {
     // limit it to 50 recent messages
     await firestore()
       .collection('chats')
-      .doc('12-16')
+      .doc(route.params?.combinedUserId)
       .update({
         messages: firestore.FieldValue.arrayUnion({
           message,

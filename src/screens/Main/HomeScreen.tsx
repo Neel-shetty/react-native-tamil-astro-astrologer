@@ -4,11 +4,13 @@ import {colors} from '../../themes/colors';
 import {layout} from '../../constants/layout';
 import {fonts} from '../../themes/fonts';
 import ChatList from '../../components/MainComponents/HomeScreenComponents/ChatList';
+import Call from '../../components/CallComponents/Call';
 
 const HomeScreen = () => {
   return (
     <View style={styles.root}>
       <ChatList />
+      {/* <Call /> */}
     </View>
   );
 };

@@ -6,15 +6,26 @@ import Auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import {HomeScreenNavigationProp} from '../../../router/types';
 import ChatScreen from '../../../screens/Main/ChatScreen';
+import {layout} from '../../../constants/layout';
 
 const ChatList = () => {
   const [chats, setChats] = React.useState([]);
+  console.log('🚀 ~ file: ChatList.tsx:12 ~ ChatList ~ chats:', chats);
   const navigation = useNavigation<HomeScreenNavigationProp['navigation']>();
   async function fetchChats() {
     const uid = Auth().currentUser?.uid;
     console.log('🚀 ~ file: ChatList.tsx:10 ~ fetchChats ~ uid:', uid);
-    const fchats = await firestore().collection('chats').get();
-    setChats(fchats.docs);
+    firestore()
+      .collection('chats')
+      .where('astrologerId', '==', 12)
+      .onSnapshot(querySnapshot => {
+        console.log(
+          '🚀 ~ file: ChatList.tsx:14 ~ fetchChats ~ querySnapshot:',
+          setChats(querySnapshot.docs),
+        );
+      });
+
+    // setChats(fchats.docs);
   }
   React.useEffect(() => {
     fetchChats();
@@ -22,7 +33,7 @@ const ChatList = () => {
   return (
     <View>
       <Text>ChatList</Text>
-      {chats.map(chat => {
+      {chats.map((chat, index) => {
         console.log(
           '🚀 ~ file: ChatList.tsx:25 ~ ChatList ~ chat:',
           chat.data(),
@@ -39,12 +50,17 @@ const ChatList = () => {
         );
         return (
           <TouchableOpacity
+            key={index}
             onPress={() => {
               navigation.navigate(ChatScreen.name, {
                 combinedUserId: combinedUserId,
               });
             }}>
-            <Text style={{color: 'black'}}>{chat.data().userId}</Text>
+            <View style={styles.chatItem}>
+              <Text style={{color: 'black'}}>
+                user id - {chat.data().userId}
+              </Text>
+            </View>
           </TouchableOpacity>
         );
       })}
@@ -54,4 +70,14 @@ const ChatList = () => {
 
 export default ChatList;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  chatItem: {
+    padding: 10,
+    margin: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    width: layout.widthp,
+    borderBottomWidth: 1,
+    elevation: 5,
+  },
+});

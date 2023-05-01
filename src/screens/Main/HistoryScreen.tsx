@@ -2,11 +2,13 @@ import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import {colors} from '../../themes/colors';
 import HistoryList from '../../components/MainComponents/HistoryScreenComponents/HistoryList';
+import Call from '../../components/CallComponents/Call';
 
 const HistoryScreen = () => {
   return (
     <View style={styles.root}>
-      <HistoryList />
+      {/* <HistoryList /> */}
+      <Call />
     </View>
   );
 };

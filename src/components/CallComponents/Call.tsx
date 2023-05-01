@@ -237,13 +237,16 @@ const Call = () => {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'pink',
+      // backgroundColor: 'pink',
+      width: '100%',
     };
 
     return (
       <View style={root}>
-        <Text>Incoming Call!</Text>
+        <Text style={{color: 'black', fontSize: 18}}>Incoming Call!</Text>
+        <View style={{height: 20}} />
         <Button onPress={join} title="Receive" />
+        <View style={{height: 20}} />
         <Button onPress={hangupCallback} title="Reject" />
       </View>
     );
