@@ -10,7 +10,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.root}>
       <ChatList />
-      {/* <Call /> */}
+      <Call />
     </View>
   );
 };

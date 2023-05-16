@@ -31,7 +31,7 @@ const PhoneInput = ({
           onChangeText={handleChange}
           onBlur={handleBlur}
           value={value}
-          maxLength={10}
+          // maxLength={10}
         />
       </View>
       <View style={styles.underline} />

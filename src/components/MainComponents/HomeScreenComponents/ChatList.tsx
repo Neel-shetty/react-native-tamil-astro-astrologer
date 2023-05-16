@@ -17,11 +17,12 @@ const ChatList = () => {
     console.log('🚀 ~ file: ChatList.tsx:10 ~ fetchChats ~ uid:', uid);
     firestore()
       .collection('chats')
-      .where('astrologerId', '==', 12)
+      .where('astrologerId', '==', 16)
+      
       .onSnapshot(querySnapshot => {
         console.log(
           '🚀 ~ file: ChatList.tsx:14 ~ fetchChats ~ querySnapshot:',
-          setChats(querySnapshot.docs),
+          // querySnapshot?.docs.map(doc => doc.data().messages[1]),
         );
       });
 

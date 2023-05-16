@@ -15,6 +15,7 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Auth from '@react-native-firebase/auth';
 
 const Call = () => {
   const [localstream, setLocalStream] = React.useState<MediaStream | null>();
@@ -54,8 +55,18 @@ const Call = () => {
     // setup the WebRTC connection
     await setupWebRTC();
 
+    // get the combined user if from the calls database
+    const user = Auth().currentUser;
+    const callDetails = await firestore()
+      .collection('calls')
+      .where('astrologerId', '==', Number(user?.uid))
+      .get();
+
+    // const combinedUserId = callDetails.docs[0].combinedUserId;
+    const combinedUserId = callDetails.docs[0].data().combinedUserId;
+
     // document for the call
-    const cRef = firestore().collection('meet').doc('chatId');
+    const cRef = firestore().collection('meet').doc(combinedUserId);
 
     // Exchange ICE candidates
     collectIceCandidates(cRef, 'caller', 'callee');
@@ -81,7 +92,16 @@ const Call = () => {
     connecting.current = true;
     setGettingCall(false);
 
-    const cRef = firestore().collection('meet').doc('chatId');
+    // get the combined user if from the calls database
+    const user = Auth().currentUser;
+    const callDetails = await firestore()
+      .collection('calls')
+      .where('astrologerId', '==', Number(user?.uid))
+      .get();
+
+    // const combinedUserId = callDetails.docs[0].combinedUserId;
+    const combinedUserId = callDetails.docs[0].data().combinedUserId;
+    const cRef = firestore().collection('meet').doc(combinedUserId);
     const offer = (await cRef.get()).data()?.offer;
 
     if (offer) {
@@ -142,7 +162,17 @@ const Call = () => {
   );
 
   async function firestoreCleanUp() {
-    const cRef = firestore().collection('meet').doc('chatId');
+    // get the combined user if from the calls database
+    const user = Auth().currentUser;
+    const callDetails = await firestore()
+      .collection('calls')
+      .where('astrologerId', '==', Number(user?.uid))
+      .get();
+
+    // const combinedUserId = callDetails.docs[0].combinedUserId;
+    const combinedUserId = callDetails.docs[0].data().combinedUserId;
+    const cRef = firestore().collection('meet').doc(combinedUserId);
+    console.log('🚀 ~ file: Call.tsx:175 ~ firestoreCleanUp ~ cRef:', cRef);
 
     if (cRef) {
       const calleeCandidate = await cRef.collection('callee').get();
@@ -192,43 +222,67 @@ const Call = () => {
   };
 
   React.useEffect(() => {
-    const cRef = firestore().collection('meet').doc('chatId');
+    async function getCall() {
+      const user = Auth().currentUser;
+      const callDetails = await firestore()
+        .collection('calls')
+        .where('astrologerId', '==', 16)
+        .get();
+      const combinedUserId = callDetails.docs[0].combinedUserId;
+      console.log(
+        '🚀 ~ file: Call.tsx:228 ~ getCall ~ combinedUserId:',
+        // callDetails,
+        callDetails.docs[0].data().combinedUserId,
+      );
+      const cRef = firestore().collection('meet').doc(combinedUserId);
+      console.log(
+        '🚀 ~ file: Call.tsx:238 ~ getCall ~ cRef:',
+        (await cRef.get()).data(),
+      );
 
-    const subscribe = cRef.onSnapshot(async snapshot => {
-      const data = snapshot.data();
+      const subscribe = cRef.onSnapshot(async snapshot => {
+        const data = snapshot.data();
+        console.log('🚀 ~ file: Call.tsx:241 ~ subscribe ~ data:', data);
 
-      // on answer start the call
-      if (pc.current && !pc.current.remoteDescription && data && data.answer) {
-        const answer = new RTCSessionDescription(data.answer);
-        await pc.current.setRemoteDescription(answer);
-      }
+        // on answer start the call
+        if (
+          pc.current &&
+          !pc.current.remoteDescription &&
+          data &&
+          data.answer
+        ) {
+          const answer = new RTCSessionDescription(data.answer);
+          await pc.current.setRemoteDescription(answer);
+        }
 
-      // if there is offer for chatid set the getting call to true
-      if (data && data.offer && !connecting.current) {
-        console.log('call offer exists in db');
-        setGettingCall(true);
-      }
-    });
-
-    //on delete of the collection call hangup
-    // the other side has clicked hangup
-    const subscribeDelete = cRef.collection('callee').onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(async change => {
-        if (change.type === 'removed') {
-          hangupCallback();
+        // if there is offer for chatid set the getting call to true
+        if (data && data.offer && !connecting.current) {
+          console.log('call offer exists in db');
+          setGettingCall(true);
         }
       });
-    });
 
-    (async function () {
-      const id = await AsyncStorage.getItem('id');
-      console.log('🚀 ~ file: Call.tsx:27 ~ Call ~ id:', id);
-    })();
+      //on delete of the collection call hangup
+      // the other side has clicked hangup
+      const subscribeDelete = cRef.collection('callee').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(async change => {
+          if (change.type === 'removed') {
+            hangupCallback();
+          }
+        });
+      });
 
-    return () => {
-      subscribe();
-      subscribeDelete();
-    };
+      (async function () {
+        const id = await AsyncStorage.getItem('id');
+        console.log('🚀 ~ file: Call.tsx:27 ~ Call ~ id:', id);
+      })();
+
+      return () => {
+        subscribe();
+        subscribeDelete();
+      };
+    }
+    getCall();
   }, [hangupCallback]);
 
   // displays the incoming call screen
