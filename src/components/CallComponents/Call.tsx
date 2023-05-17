@@ -228,7 +228,7 @@ const Call = () => {
         .collection('calls')
         .where('astrologerId', '==', 16)
         .get();
-      const combinedUserId = callDetails.docs[0].combinedUserId;
+      const combinedUserId = callDetails.docs[0].data().combinedUserId;
       console.log(
         '🚀 ~ file: Call.tsx:228 ~ getCall ~ combinedUserId:',
         // callDetails,

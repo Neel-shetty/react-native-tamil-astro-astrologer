@@ -1,16 +1,45 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {fonts} from '../../../themes/fonts';
 import {colors} from '../../../themes/colors';
 
 const Timer = () => {
+  //timer in minutes and seconds
+  const [timer, setTimer] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(timer => timer + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  function fancyTimeFormat(duration: number) {
+    // Hours, minutes and seconds
+    const hrs = ~~(duration / 3600);
+    const mins = ~~((duration % 3600) / 60);
+    const secs = ~~duration % 60;
+
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    let ret = '';
+
+    if (hrs > 0) {
+      ret += '' + hrs + ':' + (mins < 10 ? '0' : '');
+    }
+
+    ret += '' + mins + ':' + (secs < 10 ? '0' : '');
+    ret += '' + secs;
+
+    return ret;
+  }
+
   return (
     <View style={styles.root}>
-      <TouchableOpacity>
-        <Text style={styles.text}>End Chat</Text>
-      </TouchableOpacity>
+      <View>
+        <Text style={styles.time}>{fancyTimeFormat(timer)} minutes</Text>
+      </View>
       <View style={styles.timeContainer}>
-        <Text style={styles.time}>1:22 Mins Left</Text>
+        {/* <Text style={styles.time}>{fancyTimeFormat(timer)}</Text> */}
       </View>
     </View>
   );
@@ -29,7 +58,7 @@ const styles = StyleSheet.create({
     color: colors.palette.accent500,
   },
   time: {
-    fontFamily: fonts.imprima,
+    fontFamily: fonts.DiwanKufi,
     fontSize: 14,
     color: colors.text,
   },

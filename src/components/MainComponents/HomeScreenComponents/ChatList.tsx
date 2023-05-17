@@ -10,7 +10,6 @@ import {layout} from '../../../constants/layout';
 
 const ChatList = () => {
   const [chats, setChats] = React.useState([]);
-  console.log('🚀 ~ file: ChatList.tsx:12 ~ ChatList ~ chats:', chats);
   const navigation = useNavigation<HomeScreenNavigationProp['navigation']>();
   async function fetchChats() {
     const uid = Auth().currentUser?.uid;
@@ -18,12 +17,13 @@ const ChatList = () => {
     firestore()
       .collection('chats')
       .where('astrologerId', '==', 16)
-      
+      .orderBy('time', 'desc')
       .onSnapshot(querySnapshot => {
         console.log(
           '🚀 ~ file: ChatList.tsx:14 ~ fetchChats ~ querySnapshot:',
-          // querySnapshot?.docs.map(doc => doc.data().messages[1]),
+          querySnapshot?.docs,
         );
+        setChats(querySnapshot?.docs);
       });
 
     // setChats(fchats.docs);
@@ -32,13 +32,9 @@ const ChatList = () => {
     fetchChats();
   }, []);
   return (
-    <View>
+    <View style={styles.root}>
       <Text>ChatList</Text>
-      {chats.map((chat, index) => {
-        console.log(
-          '🚀 ~ file: ChatList.tsx:25 ~ ChatList ~ chat:',
-          chat.data(),
-        );
+      {chats?.map((chat, index) => {
         const user = Auth().currentUser;
         const combinedUserId =
           Number(chat.data().userID) > Number(user.uid)
@@ -80,5 +76,9 @@ const styles = StyleSheet.create({
     width: layout.widthp,
     borderBottomWidth: 1,
     elevation: 5,
+  },
+  root: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

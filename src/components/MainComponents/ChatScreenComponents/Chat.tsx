@@ -12,6 +12,12 @@ import firestore from '@react-native-firebase/firestore';
 import Auth from '@react-native-firebase/auth';
 import {useRoute} from '@react-navigation/native';
 import {ChatScreenNavigationProp} from '../../../router/types';
+import {SendMessage} from '../../../api/SendMessage';
+
+export type messagesType = {
+  uid: string;
+  message: string;
+}[];
 
 const Chat = () => {
   const [messages, setMessages] = React.useState<
@@ -32,28 +38,64 @@ const Chat = () => {
   );
 
   const chatId = React.useMemo(() => route.params?.chatId, [route]);
+  const userID = React.useMemo(() => Auth().currentUser?.uid, []);
+  const uniqueId = React.useMemo(
+    () => Math.floor(100000 + Math.random() * 900000),
+    [],
+  );
 
   async function getMessages() {
     firestore()
       .collection('chats')
       .doc(route.params?.combinedUserId)
+      .collection('messages')
+      .orderBy('createdAt', 'asc')
+      // .limitToLast(5)
       .onSnapshot(doc => {
-        // console.log('Current data: ', doc.data());
-        setMessages(doc.data()?.messages);
+        const texts: messagesType = [];
+        doc.forEach(message => {
+          texts.push(message.data() as messagesType[0]);
+        });
+        setMessages(texts);
       });
   }
 
+  async function sendMessageToMyServer(message: string) {
+    const ids = route.params?.combinedUserId?.split('-');
+    const astroId = ids?.filter((id: string) => id !== userID);
+    console.log(
+      '🚀 ~ file: Chat.tsx:97 ~ sendMessageToMyServer ~ astroId:',
+      astroId,
+    );
+
+    //generate random number of 6 digits
+    console.log(
+      '🚀 ~ file: Chat.tsx:50 ~ sendMessageToMyServer ~ uniqueId:',
+      uniqueId,
+    );
+    if (astroId) {
+      const res = await SendMessage({
+        to: astroId[0],
+        message,
+        from: userID,
+        uniqueId,
+      });
+      console.log('send message result- ---- ', res);
+    }
+  }
+
   async function sendMessage(message: string) {
+    sendMessageToMyServer(message);
     const user = Auth().currentUser;
     // limit it to 50 recent messages
     await firestore()
       .collection('chats')
       .doc(route.params?.combinedUserId)
-      .update({
-        messages: firestore.FieldValue.arrayUnion({
-          message,
-          uid: user?.uid,
-        }),
+      .collection('messages')
+      .add({
+        uid: user?.uid,
+        message,
+        createdAt: firestore.FieldValue.serverTimestamp(),
       });
   }
 
