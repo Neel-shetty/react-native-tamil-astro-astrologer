@@ -64,9 +64,15 @@ const Call = () => {
 
     // const combinedUserId = callDetails.docs[0].combinedUserId;
     const combinedUserId = callDetails.docs[0].data().combinedUserId;
+    console.log(
+      '🚀 ~ file: Call.tsx:67 ~ create ~ combinedUserId:',
+      combinedUserId,
+    );
 
     // document for the call
-    const cRef = firestore().collection('meet').doc(combinedUserId);
+    const cRef = firestore()
+      .collection('meet')
+      .doc(JSON.stringify(combinedUserId));
 
     // Exchange ICE candidates
     collectIceCandidates(cRef, 'caller', 'callee');
@@ -224,53 +230,60 @@ const Call = () => {
   React.useEffect(() => {
     async function getCall() {
       const user = Auth().currentUser;
+      let combinedUserId;
+
       const callDetails = await firestore()
         .collection('calls')
-        .where('astrologerId', '==', 16)
-        .get();
-      const combinedUserId = callDetails.docs[0].data().combinedUserId;
-      console.log(
-        '🚀 ~ file: Call.tsx:228 ~ getCall ~ combinedUserId:',
-        // callDetails,
-        callDetails.docs[0].data().combinedUserId,
-      );
-      const cRef = firestore().collection('meet').doc(combinedUserId);
-      console.log(
-        '🚀 ~ file: Call.tsx:238 ~ getCall ~ cRef:',
-        (await cRef.get()).data(),
-      );
+        .where('astrologerId', '==', Number(user?.uid))
+        .onSnapshot(snapshot => {
+          console.log(
+            '🚀 ~ file: Call.tsx:228 ~ getCall ~ snapshot:',
+            (combinedUserId = snapshot.docs[0]?.data().combinedUserId),
+          );
+          combinedUserId = snapshot.docs[0]?.data().combinedUserId;
+          console.log(combinedUserId);
+          // const combinedUserId = callDetails.docs[0]?.data().combinedUserId;
 
-      const subscribe = cRef.onSnapshot(async snapshot => {
-        const data = snapshot.data();
-        console.log('🚀 ~ file: Call.tsx:241 ~ subscribe ~ data:', data);
+          const cRef = firestore().collection('meet').doc(combinedUserId);
+          // console.log(
+          //   '🚀 ~ file: Call.tsx:238 ~ getCall ~ cRef:',
+          //   (await cRef.get()).data(),
+          // );
 
-        // on answer start the call
-        if (
-          pc.current &&
-          !pc.current.remoteDescription &&
-          data &&
-          data.answer
-        ) {
-          const answer = new RTCSessionDescription(data.answer);
-          await pc.current.setRemoteDescription(answer);
-        }
+          const subscribe = cRef.onSnapshot(async snapshot => {
+            const data = snapshot.data();
+            console.log('🚀 ~ file: Call.tsx:241 ~ subscribe ~ data:', data);
 
-        // if there is offer for chatid set the getting call to true
-        if (data && data.offer && !connecting.current) {
-          console.log('call offer exists in db');
-          setGettingCall(true);
-        }
-      });
+            // on answer start the call
+            if (
+              pc.current &&
+              !pc.current.remoteDescription &&
+              data &&
+              data.answer
+            ) {
+              const answer = new RTCSessionDescription(data.answer);
+              await pc.current.setRemoteDescription(answer);
+            }
 
-      //on delete of the collection call hangup
-      // the other side has clicked hangup
-      const subscribeDelete = cRef.collection('callee').onSnapshot(snapshot => {
-        snapshot.docChanges().forEach(async change => {
-          if (change.type === 'removed') {
-            hangupCallback();
-          }
+            // if there is offer for chatid set the getting call to true
+            if (data && data.offer && !connecting.current) {
+              console.log('call offer exists in db');
+              setGettingCall(true);
+            }
+          });
+
+          //on delete of the collection call hangup
+          // the other side has clicked hangup
+          const subscribeDelete = cRef
+            .collection('callee')
+            .onSnapshot(snapshot => {
+              snapshot.docChanges().forEach(async change => {
+                if (change.type === 'removed') {
+                  hangupCallback();
+                }
+              });
+            });
         });
-      });
 
       (async function () {
         const id = await AsyncStorage.getItem('id');
@@ -278,8 +291,9 @@ const Call = () => {
       })();
 
       return () => {
-        subscribe();
-        subscribeDelete();
+        // subscribe();
+        // subscribeDelete();
+        callDetails();
       };
     }
     getCall();

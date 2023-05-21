@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   root: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
   },
 });
