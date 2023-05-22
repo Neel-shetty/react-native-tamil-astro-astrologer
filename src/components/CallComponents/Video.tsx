@@ -17,7 +17,7 @@ const Video = (props: Props) => {
           streamURL={props.localStream.toURL()}
           objectFit="cover"
         />
-        <Button title="Hang up" onPress={props.hangup} />
+        {/* <Button title="Hang up" onPress={props.hangup} /> */}
       </View>
     );
   }
@@ -35,7 +35,7 @@ const Video = (props: Props) => {
           streamURL={props.localStream.toURL()}
           objectFit="cover"
         />
-        <Button title="Hang up" onPress={props.hangup} />
+        {/* <Button title="Hang up" onPress={props.hangup} /> */}
       </View>
     );
   }

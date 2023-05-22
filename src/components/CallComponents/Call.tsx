@@ -21,6 +21,7 @@ const Call = () => {
   const [localstream, setLocalStream] = React.useState<MediaStream | null>();
   const [remotestream, setRemoteStream] = React.useState<MediaStream | null>();
   const [gettingCall, setGettingCall] = React.useState(false);
+  const [combUid, setCombUid] = React.useState('');
   console.log('🚀 ~ file: Call.tsx:23 ~ Call ~ gettingCall:', gettingCall);
   const pc = React.useRef<RTCPeerConnection>();
   const connecting = React.useRef(false);
@@ -108,6 +109,7 @@ const Call = () => {
     // const combinedUserId = callDetails.docs[0].combinedUserId;
     const combinedUserId = callDetails.docs[0].data().combinedUserId;
     const cRef = firestore().collection('meet').doc(combinedUserId);
+    console.log('join cref', cRef);
     const offer = (await cRef.get()).data()?.offer;
 
     if (offer) {
@@ -228,31 +230,58 @@ const Call = () => {
   };
 
   React.useEffect(() => {
-    async function getCall() {
+    function getCombinedUid() {
       const user = Auth().currentUser;
-      let combinedUserId;
-
-      const callDetails = await firestore()
+      const callDetails = firestore()
         .collection('calls')
         .where('astrologerId', '==', Number(user?.uid))
         .onSnapshot(snapshot => {
           console.log(
             '🚀 ~ file: Call.tsx:228 ~ getCall ~ snapshot:',
-            (combinedUserId = snapshot.docs[0]?.data().combinedUserId),
+            snapshot.docs[0]?.data().combinedUserId,
           );
-          combinedUserId = snapshot.docs[0]?.data().combinedUserId;
+          const combinedUserId = snapshot.docs[0]?.data().combinedUserId;
           console.log(combinedUserId);
+          setCombUid(combinedUserId);
+        });
+      return callDetails;
+    }
+    const unsub = getCombinedUid();
+    return () => unsub();
+  }, []);
+
+  React.useEffect(() => {
+    async function getCall() {
+      const user = Auth().currentUser;
+      // let combinedUserId;
+      // let cRef;
+
+      const callDetails = firestore()
+        .collection('calls')
+        .where('astrologerId', '==', Number(user?.uid))
+        .onSnapshot(snapshot => {
+          console.log(
+            '🚀 ~ file: Call.tsx:228 ~ getCall ~ snapshot:',
+            snapshot.docs[0]?.data().combinedUserId,
+          );
+          const combinedUserId = snapshot.docs[0]?.data().combinedUserId;
+          console.log(combinedUserId);
+          // setCombUid(combinedUserId);
           // const combinedUserId = callDetails.docs[0]?.data().combinedUserId;
 
           const cRef = firestore().collection('meet').doc(combinedUserId);
-          // console.log(
-          //   '🚀 ~ file: Call.tsx:238 ~ getCall ~ cRef:',
-          //   (await cRef.get()).data(),
-          // );
 
-          const subscribe = cRef.onSnapshot(async snapshot => {
+          console.log('cref -- ', cRef);
+
+          // if (!cRef) {
+          //   return;
+          // }
+
+          console.log('🚀 ~ file: Call.tsx:238 ~ getCall ~ cRef:', cRef.get());
+
+          const subscribe = cRef?.onSnapshot(async snapshot => {
             const data = snapshot.data();
-            console.log('🚀 ~ file: Call.tsx:241 ~ subscribe ~ data:', data);
+            // console.log('🚀 ~ file: Call.tsx:241 ~ subscribe ~ data:', data);
 
             // on answer start the call
             if (
@@ -272,23 +301,24 @@ const Call = () => {
             }
           });
 
-          //on delete of the collection call hangup
+          // on delete of the collection call hangup
           // the other side has clicked hangup
           const subscribeDelete = cRef
-            .collection('callee')
-            .onSnapshot(snapshot => {
+            ?.collection('callee')
+            ?.onSnapshot(snapshot => {
               snapshot.docChanges().forEach(async change => {
                 if (change.type === 'removed') {
                   hangupCallback();
                 }
               });
             });
+
+          // (async function () {
+          //   const id = await AsyncStorage.getItem('id');
+          //   console.log('🚀 ~ file: Call.tsx:27 ~ Call ~ id:', id);
+          // })();
         });
 
-      (async function () {
-        const id = await AsyncStorage.getItem('id');
-        console.log('🚀 ~ file: Call.tsx:27 ~ Call ~ id:', id);
-      })();
 
       return () => {
         // subscribe();
@@ -297,7 +327,7 @@ const Call = () => {
       };
     }
     getCall();
-  }, [hangupCallback]);
+  }, [hangupCallback, combUid]);
 
   // displays the incoming call screen
   if (gettingCall) {

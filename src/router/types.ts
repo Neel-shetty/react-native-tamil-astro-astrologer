@@ -51,7 +51,7 @@ export type TabStackParamList = {
     showGenderOptions?: boolean;
   };
   [DetailsFormScreen.name]: undefined;
-  [ChatScreen.name]: {chatId?: string};
+  [ChatScreen.name]: {chatId?: string; combinedUserId?: string};
   [CallScreen.name]: undefined;
 };
 

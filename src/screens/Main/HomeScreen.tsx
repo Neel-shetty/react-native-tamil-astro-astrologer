@@ -9,8 +9,19 @@ import Call from '../../components/CallComponents/Call';
 const HomeScreen = () => {
   return (
     <View style={styles.root}>
+      <Text
+        style={{
+          color: colors.text,
+          fontFamily: fonts.interSemiBold,
+          fontSize: 18,
+          textAlign: 'left',
+          width: '100%',
+          paddingLeft: layout.width * 0.05,
+        }}>
+        My Chats
+      </Text>
       <ChatList />
-      <Call />
+      {/* <Call /> */}
     </View>
   );
 };

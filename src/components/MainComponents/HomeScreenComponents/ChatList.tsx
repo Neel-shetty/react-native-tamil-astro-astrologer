@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {use} from 'i18next';
+// import {use} from 'i18next';
 import Auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import {HomeScreenNavigationProp} from '../../../router/types';
@@ -16,35 +16,52 @@ const ChatList = () => {
     console.log('🚀 ~ file: ChatList.tsx:10 ~ fetchChats ~ uid:', uid);
     firestore()
       .collection('chats')
-      .where('astrologerId', '==', 16)
-      .orderBy('time', 'desc')
+      .where('astrologerId', '==', Number(uid))
+      // .orderBy('userId', 'desc')
       .onSnapshot(querySnapshot => {
+        const chatsInFb = querySnapshot?.docs.map(doc => doc.data());
         console.log(
-          '🚀 ~ file: ChatList.tsx:14 ~ fetchChats ~ querySnapshot:',
-          querySnapshot?.docs,
+          '🚀 ~ file: ChatList.tsx:27 ~ fetchChats ~ chatsInFb:',
+          chatsInFb,
         );
-        setChats(querySnapshot?.docs);
+
+        //@ts-ignore
+        setChats(chatsInFb);
       });
+
+    // firestore()
+    //   .collection('chats')
+    //   .where('astrologerId', '==', Number(uid))
+    //   // .orderBy('time', 'desc')
+    //   .onSnapshot(querySnapshot => {
+    //     const chatsInFb = querySnapshot?.docs.map(doc => doc.data());
+    //     console.log(
+    //       '🚀 ~ file: ChatList.tsx:27 ~ fetchChats ~ chatsInFb:',
+    //       chatsInFb,
+    //     );
+    //     setChats(chatsInFb);
+    //   });
 
     // setChats(fchats.docs);
   }
   React.useEffect(() => {
     fetchChats();
   }, []);
+
   return (
     <View style={styles.root}>
-      <Text>ChatList</Text>
       {chats?.map((chat, index) => {
         const user = Auth().currentUser;
         const combinedUserId =
-          Number(chat.data().userID) > Number(user.uid)
-            ? `${chat.data().userId}-${user.uid}`
-            : `${user.uid}-${chat.data().userId}`;
+          //@ts-ignore
+          Number(chat.userID) > Number(user?.uid)
+            ? //@ts-ignore
+              `${chat.userId}-${user?.uid}`
+            : //@ts-ignore
+              `${user?.uid}-${chat.userId}`;
+        //@ts-ignore
+        console.log(chat.userId);
 
-        console.log(
-          '🚀 ~ file: ChatList.tsx:28 ~ ChatList ~ combinedUserId:',
-          combinedUserId,
-        );
         return (
           <TouchableOpacity
             key={index}
@@ -54,9 +71,8 @@ const ChatList = () => {
               });
             }}>
             <View style={styles.chatItem}>
-              <Text style={{color: 'black'}}>
-                user id - {chat.data().userId}
-              </Text>
+              {/* @ts-ignore */}
+              <Text style={{color: 'black'}}>user id - {chat?.userId}</Text>
             </View>
           </TouchableOpacity>
         );
@@ -78,7 +94,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   root: {
-    // flex: 1,
+    flex: 1,
     alignItems: 'center',
   },
 });
