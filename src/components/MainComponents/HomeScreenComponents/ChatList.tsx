@@ -72,7 +72,7 @@ const ChatList = () => {
             }}>
             <View style={styles.chatItem}>
               {/* @ts-ignore */}
-              <Text style={{color: 'black'}}>user id - {chat?.userId}</Text>
+              <Text style={{color: 'black'}}>{chat?.userName}</Text>
             </View>
           </TouchableOpacity>
         );

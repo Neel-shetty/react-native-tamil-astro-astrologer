@@ -10,6 +10,8 @@ import {RootStackParamList} from './types';
 import OtpScreen from '../screens/Auth/OtpScreen';
 import LanguageScreen from '../screens/Main/LanguageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
+import HomeScreen from '../screens/Main/HomeScreen';
+import ChatScreen from '../screens/Main/ChatScreen';
 // import BottomTabNavigator from './BottomTabNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,9 +52,17 @@ const Navigator = () => {
         }}>
         {loggedIn ? (
           <>
-            <Stack.Screen
+            {/* <Stack.Screen
               component={BottomTabNavigator.component}
               name={BottomTabNavigator.name}
+            /> */}
+            <Stack.Screen
+              name={HomeScreen.name}
+              component={HomeScreen.component}
+            />
+            <Stack.Screen
+              component={ChatScreen.component}
+              name={ChatScreen.name}
             />
           </>
         ) : (
