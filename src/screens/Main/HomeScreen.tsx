@@ -22,6 +22,7 @@ const HomeScreen = () => {
       </Text>
       <ChatList />
       {/* <Call /> */}
+      
     </View>
   );
 };
