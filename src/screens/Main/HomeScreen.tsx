@@ -5,8 +5,12 @@ import {layout} from '../../constants/layout';
 import {fonts} from '../../themes/fonts';
 import ChatList from '../../components/MainComponents/HomeScreenComponents/ChatList';
 import Call from '../../components/CallComponents/Call';
+import messaging from '@react-native-firebase/messaging';
 
 const HomeScreen = () => {
+  React.useEffect(() => {
+    const messageToken = messaging()
+  }, []);
   return (
     <View style={styles.root}>
       <Text
@@ -22,7 +26,6 @@ const HomeScreen = () => {
       </Text>
       <ChatList />
       {/* <Call /> */}
-      
     </View>
   );
 };

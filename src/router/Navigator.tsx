@@ -49,11 +49,14 @@ const Navigator = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!loggedIn) {
+      return;
+    }
     ZegoUIKitPrebuiltCallService.init(
       572938071, // You can get it from ZEGOCLOUD's console
       'f6baf179282f742eeed83d3b8cc25e42be61696205162015126658a89d29c309', // You can get it from ZEGOCLOUD's console
       Auth().currentUser?.uid || '', // Your userID
-      'name', // Your userName
+      'User_' + Auth().currentUser?.uid, // Your userName
       [ZIM, ZPNs],
       {
         ringtoneConfig: {
@@ -68,7 +71,7 @@ const Navigator = () => {
         },
       },
     );
-  }, []);
+  }, [loggedIn]);
 
   if (showSpashScreen) {
     return null;

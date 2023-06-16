@@ -25,6 +25,7 @@
     "@react-native-firebase/database": "^17.4.2",
     "@react-native-firebase/firestore": "^17.4.2",
     "@react-native-firebase/installations": "^17.4.2",
+    "@react-native-firebase/messaging": "^17.4.2",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
