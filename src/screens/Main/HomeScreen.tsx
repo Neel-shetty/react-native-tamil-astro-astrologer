@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Alert} from 'react-native';
 import React from 'react';
 import {colors} from '../../themes/colors';
 import {layout} from '../../constants/layout';
@@ -9,8 +9,28 @@ import messaging from '@react-native-firebase/messaging';
 
 const HomeScreen = () => {
   React.useEffect(() => {
-    const messageToken = messaging()
+    async function getToken() {
+      await messaging().registerDeviceForRemoteMessages();
+      const messageToken = await messaging().getToken();
+      console.log(
+        '🚀 ~ file: HomeScreen.tsx:15 ~ getToken ~ messageToken:',
+        messageToken,
+      );
+    }
+    getToken();
   }, []);
+
+  React.useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert(
+        'A new FCM message arrived!',
+        JSON.stringify(remoteMessage.notification?.title),
+      );
+    });
+
+    return unsubscribe;
+  }, []);
+
   return (
     <View style={styles.root}>
       <Text
