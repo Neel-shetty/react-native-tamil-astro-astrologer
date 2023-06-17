@@ -33,7 +33,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.root}>
-      <Text
+      {/* <Text
         style={{
           color: colors.text,
           fontFamily: fonts.interSemiBold,
@@ -43,7 +43,7 @@ const HomeScreen = () => {
           paddingLeft: layout.width * 0.05,
         }}>
         My Chats
-      </Text>
+      </Text> */}
       <ChatList />
       {/* <Call /> */}
     </View>

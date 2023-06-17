@@ -17,12 +17,14 @@ import ZegoUIKitPrebuiltCallService, {
   ZegoCallInvitationDialog,
   ZegoUIKitPrebuiltCallWaitingScreen,
   ZegoUIKitPrebuiltCallInCallScreen,
-  ZegoSendCallInvitationButton,
 } from '@zegocloud/zego-uikit-prebuilt-call-rn';
+import {Image, Text, TouchableOpacity} from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/Feather';
 
 import * as ZIM from 'zego-zim-react-native';
 import * as ZPNs from 'zego-zpns-react-native';
 import Auth from '@react-native-firebase/auth';
+import {fonts} from '../themes/fonts';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -83,7 +85,7 @@ const Navigator = () => {
       <Stack.Navigator
         screenOptions={{
           gestureEnabled: true,
-          headerShown: false,
+          // headerShown: false,
           animation: 'slide_from_right',
         }}>
         {loggedIn ? (
@@ -95,6 +97,25 @@ const Navigator = () => {
             <Stack.Screen
               name={HomeScreen.name}
               component={HomeScreen.component}
+              options={{
+                title: 'My Chats',
+                headerRight: () => (
+                  <TouchableOpacity
+                    style={{flexDirection: 'row', alignItems: 'center'}}
+                    onPress={async () => {
+                      await AsyncStorage.removeItem('loggedIn');
+                      dispatch(setLoggedIn(false));
+                      Auth().signOut();
+                    }}>
+                    <Text style={{fontFamily: fonts.interMedium, fontSize: 16}}>
+                      Logout{' '}
+                    </Text>
+                    <Image
+                      source={require('../../assets/images/drawer/logout.png')}
+                    />
+                  </TouchableOpacity>
+                ),
+              }}
             />
             <Stack.Screen
               component={ChatScreen.component}
@@ -118,14 +139,17 @@ const Navigator = () => {
             <Stack.Screen
               component={SignInScreen.component}
               name={SignInScreen.name}
+              options={{headerShown: false}}
             />
             <Stack.Screen
               component={OtpScreen.component}
               name={OtpScreen.name}
+              options={{headerShown: false}}
             />
             <Stack.Screen
               component={LanguageScreen.component}
               name={LanguageScreen.name}
+              options={{headerShown: false}}
             />
           </>
         )}
