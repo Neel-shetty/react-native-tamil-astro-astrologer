@@ -10,3 +10,4 @@
 # Add any project specific keep options here:
 -keep class org.webrtc.** { *; }
 -keep class **.zego.**  { *; }
+-keep class **.**.zego_zpns.** { *; }
