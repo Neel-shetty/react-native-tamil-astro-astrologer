@@ -9,8 +9,16 @@ import messaging from '@react-native-firebase/messaging';
 import notifee, {AndroidImportance} from '@notifee/react-native';
 import {api} from '../../api';
 import Auth from '@react-native-firebase/auth';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store';
 
 const HomeScreen = () => {
+  const userInChat = useSelector((state: RootState) => state.user.userInChat);
+  console.log(
+    '🚀 ~ file: HomeScreen.tsx:17 ~ HomeScreen ~ userInChat:',
+    userInChat,
+  );
+
   React.useEffect(() => {
     async function getToken() {
       await messaging().registerDeviceForRemoteMessages();
@@ -55,6 +63,10 @@ const HomeScreen = () => {
         });
 
         // Display a notification
+        if (title === userInChat || title === Auth().currentUser?.uid) {
+          return;
+        }
+
         await notifee.displayNotification({
           title: title,
           body: body,

@@ -13,6 +13,8 @@ import Auth from '@react-native-firebase/auth';
 import {useRoute} from '@react-navigation/native';
 import {ChatScreenNavigationProp} from '../../../router/types';
 import {SendMessage} from '../../../api/SendMessage';
+import {useDispatch} from 'react-redux';
+import {setUserInChat} from '../../../store/UserSlice';
 
 export type messagesType = {
   uid: string;
@@ -30,6 +32,7 @@ const Chat = () => {
   const [showBalance0Modal, setShowBalance0Modal] = React.useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = React.useState(false);
   const flatListRef = React.useRef<FlatList>(null);
+  const dispatch = useDispatch();
 
   const route = useRoute<ChatScreenNavigationProp['route']>();
   console.log(
@@ -102,6 +105,12 @@ const Chat = () => {
   React.useEffect(() => {
     getMessages();
   }, []);
+
+  // React.useEffect(() => {
+  //   return () => {
+  //     dispatch(setUserInChat(null));
+  //   };
+  // }, [dispatch]);
 
   //wrap user in useMemo
   const user = React.useMemo(() => Auth().currentUser, []);

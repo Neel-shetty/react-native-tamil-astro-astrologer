@@ -7,10 +7,13 @@ import {useNavigation} from '@react-navigation/native';
 import {HomeScreenNavigationProp} from '../../../router/types';
 import ChatScreen from '../../../screens/Main/ChatScreen';
 import {layout} from '../../../constants/layout';
+import {useDispatch} from 'react-redux';
+import {setUserInChat} from '../../../store/UserSlice';
 
 const ChatList = () => {
   const [chats, setChats] = React.useState([]);
   const navigation = useNavigation<HomeScreenNavigationProp['navigation']>();
+  const dispatch = useDispatch();
   async function fetchChats() {
     const uid = Auth().currentUser?.uid;
     console.log('🚀 ~ file: ChatList.tsx:10 ~ fetchChats ~ uid:', uid);
@@ -66,6 +69,7 @@ const ChatList = () => {
           <TouchableOpacity
             key={index}
             onPress={() => {
+              dispatch(setUserInChat(chat?.userName));
               navigation.navigate(ChatScreen.name, {
                 combinedUserId: combinedUserId,
               });
