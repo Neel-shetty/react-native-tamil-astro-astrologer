@@ -25,6 +25,7 @@ import * as ZIM from 'zego-zim-react-native';
 import * as ZPNs from 'zego-zpns-react-native';
 import Auth from '@react-native-firebase/auth';
 import {fonts} from '../themes/fonts';
+import Notification from '../components/MainComponents/notification/Notification';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
