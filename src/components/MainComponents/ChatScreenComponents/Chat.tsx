@@ -106,11 +106,11 @@ const Chat = () => {
     getMessages();
   }, []);
 
-  // React.useEffect(() => {
-  //   return () => {
-  //     dispatch(setUserInChat(null));
-  //   };
-  // }, [dispatch]);
+  React.useEffect(() => {
+    return () => {
+      dispatch(setUserInChat(null));
+    };
+  }, [dispatch]);
 
   //wrap user in useMemo
   const user = React.useMemo(() => Auth().currentUser, []);

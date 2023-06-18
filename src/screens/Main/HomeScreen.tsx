@@ -63,9 +63,11 @@ const HomeScreen = () => {
         });
 
         // Display a notification
+        console.log('title --- ', title, 'userInChat --- ', userInChat);
         if (title === userInChat || title === Auth().currentUser?.uid) {
           return;
         }
+        console.log('showing notification');
 
         await notifee.displayNotification({
           title: title,
@@ -82,7 +84,7 @@ const HomeScreen = () => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [userInChat]);
 
   return (
     <View style={styles.root}>
