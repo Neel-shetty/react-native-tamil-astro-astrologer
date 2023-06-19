@@ -5,11 +5,14 @@ import {colors} from '../../../themes/colors';
 import UserDetailModal from '../HomeScreenComponents/UserDetailModal';
 import {useQuery} from '@tanstack/react-query';
 import {api} from '../../../api';
+import {useRoute} from '@react-navigation/native';
+import Auth from '@react-native-firebase/auth';
 
 const Timer = () => {
   //timer in minutes and seconds
   const [timer, setTimer] = React.useState(0);
   const [showDetails, setShowDetails] = React.useState(false);
+  const route = useRoute();
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -37,9 +40,31 @@ const Timer = () => {
     return ret;
   }
 
-  const {data, isLoading, error} = useQuery(['userDetails'], async () => {
-    return api.post('/user/detail', {user_id: 17});
-  });
+  const {data, isLoading, error, refetch} = useQuery(
+    ['userDetails', route?.params?.combinedUserId],
+    async () => {
+      console.log('userDetails', route.params?.combinedUserId);
+      const cuid: string = route.params?.combinedUserId;
+      const idk = cuid.split('-');
+      const user_id = idk.map(id => {
+        if (Number(id) !== Number(Auth().currentUser?.uid)) {
+          return Number(id);
+        }
+      });
+
+      const final_id = user_id.filter(id => id !== undefined);
+
+      console.log(
+        '🚀 ~ file: Timer.tsx:50 ~ const{data,isLoading,error}=useQuery ~ user_id:',
+        final_id,
+      );
+      return api.post('/user/detail', {user_id: final_id[0]});
+    },
+  );
+
+  // React.useEffect(() => {
+  //   refetch();
+  // }, [refetch]);
 
   return (
     <View style={styles.root}>
