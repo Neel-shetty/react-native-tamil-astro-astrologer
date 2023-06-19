@@ -1,11 +1,15 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {fonts} from '../../../themes/fonts';
 import {colors} from '../../../themes/colors';
+import UserDetailModal from '../HomeScreenComponents/UserDetailModal';
+import {useQuery} from '@tanstack/react-query';
+import {api} from '../../../api';
 
 const Timer = () => {
   //timer in minutes and seconds
   const [timer, setTimer] = React.useState(0);
+  const [showDetails, setShowDetails] = React.useState(false);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -33,6 +37,10 @@ const Timer = () => {
     return ret;
   }
 
+  const {data, isLoading, error} = useQuery(['userDetails'], async () => {
+    return api.post('/user/detail', {user_id: 17});
+  });
+
   return (
     <View style={styles.root}>
       <View>
@@ -40,7 +48,21 @@ const Timer = () => {
       </View>
       <View style={styles.timeContainer}>
         {/* <Text style={styles.time}>{fancyTimeFormat(timer)}</Text> */}
+        <TouchableOpacity onPress={() => setShowDetails(true)}>
+          <Text
+            style={{
+              fontFamily: fonts.interRegular,
+              color: colors.palette.accent200,
+            }}>
+            User Details
+          </Text>
+        </TouchableOpacity>
       </View>
+      <UserDetailModal
+        userDetails={data?.data?.data}
+        visible={showDetails}
+        setVisible={setShowDetails}
+      />
     </View>
   );
 };
